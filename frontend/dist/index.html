@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ARCC — Autonomous Robotics Command Center</title>
-  <meta name="description" content="AI-powered platform for simulating, testing, and optimizing autonomous robot deployments" />
+  <meta name="description"
+    content="AI-powered platform for simulating, testing, and optimizing autonomous robot deployments" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <div id="app">
     <!-- SIDEBAR -->
@@ -16,23 +21,28 @@
       <div class="sidebar-brand">
         <div class="brand-icon">🤖</div>
         <span class="brand-text">ARCC</span>
-        <span class="brand-version">v2.0</span>
+        <span class="brand-version">v2.1</span>
       </div>
       <ul class="nav-links">
         <li><a href="#" class="nav-link active" data-page="dashboard">
-          <span class="nav-icon">◉</span> Command Center</a></li>
+            <span class="nav-icon">◉</span> Command Center</a></li>
         <li><a href="#" class="nav-link" data-page="fleet">
-          <span class="nav-icon">⬡</span> Fleet Status</a></li>
+            <span class="nav-icon">⬡</span> Fleet Status</a></li>
         <li><a href="#" class="nav-link" data-page="metrics">
-          <span class="nav-icon">◈</span> Metrics</a></li>
+            <span class="nav-icon">◈</span> Metrics</a></li>
         <li><a href="#" class="nav-link" data-page="ai">
-          <span class="nav-icon">◆</span> AI Decisions</a></li>
+            <span class="nav-icon">◆</span> AI Decisions</a></li>
         <li><a href="#" class="nav-link" data-page="scenarios">
-          <span class="nav-icon">⚡</span> God Mode</a></li>
+            <span class="nav-icon">⚡</span> God Mode</a></li>
         <li><a href="#" class="nav-link" data-page="compare">
-          <span class="nav-icon">◫</span> Run Comparison</a></li>
+            <span class="nav-icon">◫</span> Self-Improvement</a></li>
+        <li><a href="#" class="nav-link" data-page="replay">
+            <span class="nav-icon">▶</span> Replay</a></li>
+        <li><a href="#" class="nav-link" data-page="alerts">
+            <span class="nav-icon">🔔</span> Alerts</a></li>
       </ul>
       <div class="sidebar-footer">
+        <button class="demo-btn" id="btn-demo-mode">🎬 Generate Demo Data</button>
         <div class="system-status">
           <span class="status-dot"></span>
           <span id="system-status-text">Connecting...</span>
@@ -42,143 +52,217 @@
 
     <!-- MAIN CONTENT -->
     <main id="main-content">
-      <!-- HEADER -->
       <header id="top-bar">
         <h1 id="page-title">Command Center</h1>
         <div class="header-actions">
-          <div class="live-indicator">
-            <span class="pulse-dot"></span> LIVE
-          </div>
+          <div class="live-indicator"><span class="pulse-dot"></span> LIVE</div>
           <span id="clock"></span>
+          <button class="copilot-toggle" id="btn-toggle-copilot">◆ AI Copilot</button>
         </div>
       </header>
 
-      <!-- PAGE CONTAINER -->
-      <div id="page-container">
-
-        <!-- ========== DASHBOARD PAGE ========== -->
-        <section id="page-dashboard" class="page active">
-          <div class="stats-grid">
-            <div class="stat-card accent-blue">
-              <div class="stat-label">Active Runs</div>
-              <div class="stat-value" id="stat-active-runs">—</div>
-              <div class="stat-sub" id="stat-total-runs">Total: —</div>
+      <div id="content-wrapper">
+        <div id="page-container">
+          <!-- DASHBOARD -->
+          <section id="page-dashboard" class="page active">
+            <div class="stats-grid">
+              <div class="stat-card accent-blue">
+                <div class="stat-label">Active Runs</div>
+                <div class="stat-value" id="stat-active-runs">—</div>
+                <div class="stat-sub" id="stat-total-runs">Total: —</div>
+              </div>
+              <div class="stat-card accent-green">
+                <div class="stat-label">Robots Online</div>
+                <div class="stat-value" id="stat-active-robots">—</div>
+                <div class="stat-sub" id="stat-avg-battery">Avg Battery: —</div>
+              </div>
+              <div class="stat-card accent-purple">
+                <div class="stat-label">Tasks Completed</div>
+                <div class="stat-value" id="stat-completed-tasks">—</div>
+                <div class="stat-sub" id="stat-failed-tasks">Failed: —</div>
+              </div>
+              <div class="stat-card accent-orange">
+                <div class="stat-label">AI Decisions</div>
+                <div class="stat-value" id="stat-ai-decisions">—</div>
+                <div class="stat-sub" id="stat-ai-latency">Avg Latency: —</div>
+              </div>
             </div>
-            <div class="stat-card accent-green">
-              <div class="stat-label">Robots Online</div>
-              <div class="stat-value" id="stat-active-robots">—</div>
-              <div class="stat-sub" id="stat-avg-battery">Avg Battery: —</div>
-            </div>
-            <div class="stat-card accent-purple">
-              <div class="stat-label">Tasks Completed</div>
-              <div class="stat-value" id="stat-completed-tasks">—</div>
-              <div class="stat-sub" id="stat-failed-tasks">Failed: —</div>
-            </div>
-            <div class="stat-card accent-orange">
-              <div class="stat-label">AI Decisions</div>
-              <div class="stat-value" id="stat-ai-decisions">—</div>
-              <div class="stat-sub" id="stat-ai-latency">Avg Latency: —</div>
-            </div>
-          </div>
-
-          <div class="dashboard-grid">
-            <div class="card">
-              <h3>Recent Simulation Runs</h3>
-              <div id="runs-table-container">
+            <div class="dashboard-grid">
+              <div class="card">
+                <h3>Recent Simulation Runs</h3>
                 <table class="data-table">
                   <thead>
-                    <tr><th>Run #</th><th>Scenario</th><th>Status</th><th>Score</th><th>Started</th></tr>
+                    <tr>
+                      <th>Run #</th>
+                      <th>Scenario</th>
+                      <th>Status</th>
+                      <th>Score</th>
+                      <th>Efficiency</th>
+                      <th>Started</th>
+                    </tr>
                   </thead>
                   <tbody id="runs-table-body"></tbody>
                 </table>
               </div>
+              <div class="card">
+                <h3>Quick Actions</h3>
+                <div class="action-grid">
+                  <button class="action-btn" id="btn-start-run">▶ Start Run</button>
+                  <button class="action-btn danger" id="btn-stop-run">■ Stop Run</button>
+                  <button class="action-btn secondary" id="btn-optimize">◆ AI Optimize</button>
+                  <button class="action-btn accent-green-btn" id="btn-auto-optimize">⚡ Auto Optimize</button>
+                </div>
+                <div id="action-output" class="code-output"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- FLEET -->
+          <section id="page-fleet" class="page">
+            <div class="card">
+              <h3>Robot Fleet</h3>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Battery</th>
+                    <th>Position</th>
+                    <th>Task</th>
+                  </tr>
+                </thead>
+                <tbody id="fleet-table-body"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- METRICS -->
+          <section id="page-metrics" class="page">
+            <div class="card">
+              <h3>Performance Metrics</h3>
+              <div id="metrics-chart-container"><canvas id="metrics-chart"></canvas></div>
             </div>
             <div class="card">
-              <h3>Quick Actions</h3>
-              <div class="action-grid">
-                <button class="action-btn" id="btn-start-run">▶ Start Run</button>
-                <button class="action-btn danger" id="btn-stop-run">■ Stop Run</button>
-                <button class="action-btn secondary" id="btn-optimize">◆ AI Optimize</button>
-                <button class="action-btn secondary" id="btn-analyze">◈ Analyze Run</button>
+              <h3>Run Metrics Table</h3>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Run</th>
+                    <th>Scenario</th>
+                    <th>Tasks</th>
+                    <th>Completed</th>
+                    <th>Failed</th>
+                    <th>Throughput</th>
+                    <th>Efficiency</th>
+                  </tr>
+                </thead>
+                <tbody id="metrics-table-body"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- AI DECISIONS -->
+          <section id="page-ai" class="page">
+            <div class="card">
+              <h3>AI Decision Log</h3>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Type</th>
+                    <th>Confidence</th>
+                    <th>Latency</th>
+                    <th>Output</th>
+                  </tr>
+                </thead>
+                <tbody id="ai-table-body"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- GOD MODE -->
+          <section id="page-scenarios" class="page">
+            <div class="card godmode-card">
+              <div class="godmode-header">
+                <h3>⚡ GOD MODE — Scenario Triggers</h3>
+                <div class="godmode-badge">ADVANCED</div>
               </div>
-              <div id="action-output" class="code-output"></div>
+              <p class="card-desc">Inject real-time disruptions to stress-test fleet resilience. AI responds dynamically
+                to each scenario.</p>
+              <div class="scenario-grid" id="scenario-buttons"></div>
+              <div class="godmode-status" id="godmode-status"></div>
+              <div id="scenario-output" class="code-output"></div>
+            </div>
+          </section>
+
+          <!-- SELF-IMPROVEMENT -->
+          <section id="page-compare" class="page">
+            <div class="card">
+              <h3>🧠 Self-Improvement Loop</h3>
+              <p class="card-desc">Each run generates better strategy than the last. Watch efficiency climb.</p>
+              <div class="improvement-stats" id="improvement-stats"></div>
+              <div id="compare-chart-container"><canvas id="compare-chart"></canvas></div>
+            </div>
+            <div class="card">
+              <h3>AI Strategy Recommendations</h3>
+              <button class="action-btn secondary" id="btn-improve">◆ Generate Next Strategy</button>
+              <div id="improve-output" class="code-output"></div>
+            </div>
+          </section>
+
+          <!-- REPLAY -->
+          <section id="page-replay" class="page">
+            <div class="card">
+              <h3>▶ Run Replay</h3>
+              <p class="card-desc">Select a run to view its complete event timeline.</p>
+              <select id="replay-select" class="select-input"></select>
+              <button class="action-btn" id="btn-load-replay">Load Replay</button>
+              <div id="replay-timeline" class="code-output"></div>
+            </div>
+          </section>
+
+          <!-- ALERTS -->
+          <section id="page-alerts" class="page">
+            <div class="card">
+              <h3>🔔 System Alerts</h3>
+              <button class="action-btn" id="btn-check-health">Run Health Check</button>
+              <div id="alerts-list"></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- AI COPILOT PANEL -->
+        <aside id="copilot-panel" class="copilot-closed">
+          <div class="copilot-header">
+            <div class="copilot-title">
+              <span class="copilot-icon">◆</span> AI Operations Copilot
+            </div>
+            <button class="copilot-close" id="btn-close-copilot">✕</button>
+          </div>
+          <div class="copilot-messages" id="copilot-messages">
+            <div class="copilot-msg bot">
+              <div class="msg-sender">ARCC Copilot</div>
+              <div class="msg-text">I'm your AI operations assistant. Ask me anything about fleet performance,
+                optimization, costs, or failures.</div>
             </div>
           </div>
-        </section>
-
-        <!-- ========== FLEET PAGE ========== -->
-        <section id="page-fleet" class="page">
-          <div class="card">
-            <h3>Robot Fleet</h3>
-            <table class="data-table">
-              <thead>
-                <tr><th>Name</th><th>Type</th><th>Status</th><th>Battery</th><th>Position</th><th>Task</th></tr>
-              </thead>
-              <tbody id="fleet-table-body"></tbody>
-            </table>
+          <div class="copilot-suggestions" id="copilot-suggestions">
+            <button class="suggestion-chip" data-q="Why did efficiency drop?">Why did efficiency drop?</button>
+            <button class="suggestion-chip" data-q="How to optimize the fleet?">Optimize fleet</button>
+            <button class="suggestion-chip" data-q="Cost reduction strategies">Reduce costs</button>
+            <button class="suggestion-chip" data-q="Failure analysis report">Failure analysis</button>
+            <button class="suggestion-chip" data-q="Scaling recommendations">Scaling plan</button>
           </div>
-        </section>
-
-        <!-- ========== METRICS PAGE ========== -->
-        <section id="page-metrics" class="page">
-          <div class="card">
-            <h3>Performance Metrics</h3>
-            <div id="metrics-chart-container">
-              <canvas id="metrics-chart" width="800" height="350"></canvas>
-            </div>
+          <div class="copilot-input">
+            <input type="text" id="copilot-input" placeholder="Ask the copilot..." />
+            <button id="btn-send-copilot">→</button>
           </div>
-          <div class="card">
-            <h3>Run Metrics Table</h3>
-            <table class="data-table">
-              <thead>
-                <tr><th>Run</th><th>Scenario</th><th>Tasks</th><th>Completed</th><th>Throughput</th><th>Efficiency</th></tr>
-              </thead>
-              <tbody id="metrics-table-body"></tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- ========== AI DECISIONS PAGE ========== -->
-        <section id="page-ai" class="page">
-          <div class="card">
-            <h3>AI Decision Log</h3>
-            <table class="data-table">
-              <thead>
-                <tr><th>Time</th><th>Type</th><th>Confidence</th><th>Latency</th><th>Output</th></tr>
-              </thead>
-              <tbody id="ai-table-body"></tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- ========== GOD MODE PAGE ========== -->
-        <section id="page-scenarios" class="page">
-          <div class="card godmode-card">
-            <h3>⚡ God Mode — Scenario Triggers</h3>
-            <p class="card-desc">Inject real-time disruptions to test fleet resilience and AI response.</p>
-            <div class="scenario-grid" id="scenario-buttons"></div>
-            <div id="scenario-output" class="code-output"></div>
-          </div>
-        </section>
-
-        <!-- ========== RUN COMPARISON PAGE ========== -->
-        <section id="page-compare" class="page">
-          <div class="card">
-            <h3>Run-over-Run Comparison (Self-Improvement)</h3>
-            <div id="compare-chart-container">
-              <canvas id="compare-chart" width="800" height="350"></canvas>
-            </div>
-          </div>
-          <div class="card">
-            <h3>AI Improvement Recommendations</h3>
-            <button class="action-btn secondary" id="btn-improve">◆ Generate Improvement Strategy</button>
-            <div id="improve-output" class="code-output"></div>
-          </div>
-        </section>
-
+        </aside>
       </div>
     </main>
   </div>
   <script src="app.js"></script>
 </body>
+
 </html>

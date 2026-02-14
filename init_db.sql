@@ -1,6 +1,6 @@
 -- ============================================
 -- AUTONOMOUS ROBOTICS COMMAND CENTER
--- Database Schema v2.0
+-- Database Schema v2.1 (Multi-Warehouse)
 -- ============================================
 
 -- Clean slate
@@ -11,7 +11,23 @@ DROP TABLE IF EXISTS tasks CASCADE;
 DROP TABLE IF EXISTS simulation_runs CASCADE;
 DROP TABLE IF EXISTS robots CASCADE;
 DROP TABLE IF EXISTS scenarios CASCADE;
+DROP TABLE IF EXISTS warehouses CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
+
+-- ============================================
+-- MULTI-WAREHOUSE SUPPORT
+-- ============================================
+
+CREATE TABLE warehouses (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL,
+    location VARCHAR(200),
+    grid_width INT DEFAULT 100,
+    grid_height INT DEFAULT 100,
+    status VARCHAR(20) DEFAULT 'active',
+    config JSONB DEFAULT '{}',
+    created_at TIMESTAMP DEFAULT NOW()
+);
 
 -- ============================================
 -- CORE TABLES
@@ -36,6 +52,7 @@ CREATE TABLE scenarios (
 
 CREATE TABLE robots (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    warehouse_id UUID REFERENCES warehouses(id),
     name VARCHAR(50) NOT NULL,
     type VARCHAR(30) DEFAULT 'delivery',
     status VARCHAR(20) DEFAULT 'idle',
@@ -51,6 +68,7 @@ CREATE TABLE robots (
 CREATE TABLE simulation_runs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     scenario_id UUID REFERENCES scenarios(id),
+    warehouse_id UUID REFERENCES warehouses(id),
     status VARCHAR(20) DEFAULT 'pending',
     strategy_json JSONB DEFAULT '{}',
     start_time TIMESTAMP DEFAULT NOW(),
@@ -158,3 +176,9 @@ INSERT INTO robots (name, type, status, battery_level, position_x, position_y) V
 INSERT INTO users (username, role) VALUES
     ('admin', 'admin'),
     ('dashboard', 'viewer');
+
+-- Warehouse seed data
+INSERT INTO warehouses (name, location, grid_width, grid_height, config) VALUES
+    ('Warehouse Alpha', 'San Francisco, CA', 100, 100, '{"zones": 4, "charging_stations": 3}'),
+    ('Warehouse Beta', 'Austin, TX', 150, 80, '{"zones": 6, "charging_stations": 4}'),
+    ('Warehouse Gamma', 'Berlin, DE', 200, 120, '{"zones": 8, "charging_stations": 6}');
