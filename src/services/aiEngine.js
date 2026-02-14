@@ -7,7 +7,7 @@ const { pool } = require('../config/db');
 
 // Gemini API config (set GEMINI_API_KEY env var to enable)
 const GEMINI_KEY = process.env.GEMINI_API_KEY || null;
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent';
 
 // ============================================
 // PROMPT TEMPLATES
