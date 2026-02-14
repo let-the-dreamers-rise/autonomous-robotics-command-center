@@ -1,74 +1,56 @@
 require('dotenv').config();
 const express = require('express');
-const { Pool } = require('pg');
-const redis = require('redis');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
 
-// 1. Setup Express
+// Import routes
+const simulationRoutes = require('./src/routes/simulations');
+const telemetryRoutes = require('./src/routes/telemetry');
+const robotRoutes = require('./src/routes/robots');
+const taskRoutes = require('./src/routes/tasks');
+const metricRoutes = require('./src/routes/metrics');
+const aiRoutes = require('./src/routes/ai');
+const scenarioRoutes = require('./src/routes/scenarios');
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
+
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// 2. Setup Database Connection
-const pool = new Pool({
-  user: 'admin',
-  host: 'localhost',
-  database: 'robotics_v1',
-  password: 'securepassword123',
-  port: 5432,
-});
-
-// 3. Setup Redis (Caching/Realtime)
-const redisClient = redis.createClient();
-redisClient.connect().catch(console.error);
-
-// --- API ENDPOINTS ---
+// Serve frontend static files
+app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
 
 // Health Check
-app.get('/', (req, res) => {
-  res.json({ status: 'active', system: 'robotics-backend', time: new Date() });
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'active',
+        system: 'Autonomous Robotics Command Center',
+        version: '2.0.0',
+        uptime: process.uptime(),
+        timestamp: new Date()
+    });
 });
 
-// A. Create Simulation Run
-app.post('/api/simulations/start', async (req, res) => {
-  const { scenario_id, username } = req.body;
-  try {
-    const result = await pool.query(
-      "INSERT INTO simulation_runs (scenario_id, status) VALUES (\$1, 'running') RETURNING id",
-      [scenario_id]
-    );
-    res.json({ run_id: result.rows[0].id, status: 'started' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+// Mount Routes
+app.use('/api/simulations', simulationRoutes);
+app.use('/api/telemetry', telemetryRoutes);
+app.use('/api/robots', robotRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/metrics', metricRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/scenarios', scenarioRoutes);
+
+// Catch-all: serve frontend for non-API routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
 });
 
-// B. Ingest Telemetry (High Frequency)
-app.post('/api/telemetry/:run_id', async (req, res) => {
-  const { run_id } = req.params;
-  const { x, y, velocity, battery, sensors } = req.body;
-  
-  // Fast write to Redis for Dashboard (Real-time)
-  await redisClient.set(`robot_state:${run_id}`, JSON.stringify(req.body), { EX: 60 });
-
-  // Async write to DB (Persist)
-  pool.query(
-    "INSERT INTO telemetry_logs (run_id, position_x, position_y, velocity, battery_level, sensor_data) VALUES (\$1, \$2, \$3, \$4, \$5, \$6)",
-    [run_id, x, y, velocity, battery, sensors]
-  );
-  
-  res.json({ status: 'ok' });
-});
-
-// C. Get Dashboard Metrics
-app.get('/api/metrics/runs', async (req, res) => {
-  const result = await pool.query("SELECT * FROM simulation_runs ORDER BY start_time DESC LIMIT 10");
-  res.json(result.rows);
-});
-
-// Start Server
+// Start
 app.listen(port, () => {
-  console.log(`🚀 Robotics Backend running on Port ${port}`);
+    console.log(`🤖 Autonomous Robotics Command Center running on Port ${port}`);
+    console.log(`   API:       http://localhost:${port}/api/health`);
+    console.log(`   Dashboard: http://localhost:${port}`);
 });
