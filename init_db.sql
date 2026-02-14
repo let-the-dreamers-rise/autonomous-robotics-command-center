@@ -36,7 +36,7 @@ CREATE TABLE warehouses (
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(50) UNIQUE NOT NULL,
-    api_key VARCHAR(100) UNIQUE NOT NULL DEFAULT encode(gen_random_bytes(32), 'hex'),
+    api_key VARCHAR(100) UNIQUE NOT NULL DEFAULT md5(random()::text),
     role VARCHAR(20) DEFAULT 'viewer',
     created_at TIMESTAMP DEFAULT NOW()
 );
