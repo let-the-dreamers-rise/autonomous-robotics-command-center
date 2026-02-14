@@ -1,171 +1,144 @@
-# 🤖 Autonomous Robotics Command Center (ARCC)
+# 🤖 ARCC — Autonomous Robotics Command Center
 
-**AI-powered platform for simulating, testing, and optimizing autonomous robot deployments before real-world rollout.**
+**A Digital Twin Platform for Simulating, Optimizing, and Managing Autonomous Robot Fleets.**
 
-> *"What if companies could test 1,000 robot configurations in software before deploying a single unit in the real world?"*
+> *"What if you could test 1,000 robot configurations in software before deploying a single unit in the real world?"*
+
+[![Live Demo](https://img.shields.io/badge/LIVE_DEMO-149.28.125.185-green?style=for-the-badge&logo=vultr)](http://149.28.125.185:3000)
+[![Backend](https://img.shields.io/badge/Backend-Node.js_22-green?style=flat-square&logo=nodedotjs)](https://nodejs.org/)
+[![Database](https://img.shields.io/badge/Database-PostgreSQL_15-blue?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
+[![AI Engine](https://img.shields.io/badge/AI_Engine-Gemini_2.5_Pro-purple?style=flat-square&logo=google)](https://deepmind.google/technologies/gemini/)
 
 ---
 
-## 🎯 Problem
+## 🚀 Live Demo
+**👉 [Access the Command Center](http://149.28.125.185:3000)**
 
-Deploying autonomous robots is expensive and risky. A single misconfiguration can cost $50K+ in damaged equipment, lost productivity, and safety incidents. Companies today deploy robots blindly — hoping their routing algorithms work, their battery models hold up, and their fleet can handle demand spikes.
+*No login required for guest access. Watch the fleet in action!*
 
-## 💡 Solution
+---
 
-ARCC is a **digital twin command center** that lets operations teams:
+## 🎯 The Problem
+Deploying autonomous robots is **expensive and risky**. A single misconfiguration can cost $50K+ in damaged equipment. Companies today deploy blindly, hoping their algorithms work in the real world.
 
-1. **Simulate** robot fleets in configurable warehouse environments
-2. **Test** fleet resilience against failures, demand surges, and blocked paths
-3. **Optimize** task assignments using AI (Gemini) in real-time
-4. **Learn** — the system improves its strategy after every run automatically
+## 💡 The Solution
+**ARCC** is a centralized command center that bridges **simulation** and **metrics**. It acts as a "flight recorder" and "traffic controller" for your robot fleet, powered by **Google's Gemini 2.5 Pro** model.
+
+### Key Capabilities
+1.  **🏭 Multi-Warehouse Management**: Track robots across different physical locations (San Francisco, Austin, Berlin).
+2.  **🧠 AI Optimization**: Gemini 2.5 Pro analyzes telemetry to assign tasks and optimize routes in real-time.
+3.  **⚡ God Mode**: Inject chaos (blocked paths, battery failures, demand spikes) to stress-test your fleet.
+4.  **🔄 Self-Improvement Loop**: The system learns from every simulation run, generating better strategies automatically.
+5.  **🔌 Universal Bridge**: Connect **Webots**, **Gazebo**, or **Unity** simulations via a simple REST API.
 
 ---
 
 ## 🏗 Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    FRONTEND DASHBOARD                       │
-│  Command Center │ Fleet │ Metrics │ AI Log │ God Mode       │
-└────────────────────────┬────────────────────────────────────┘
-                         │ REST API (polling)
-┌────────────────────────┴────────────────────────────────────┐
-│                     EXPRESS.JS API                           │
-│  /simulations │ /telemetry │ /robots │ /tasks │ /ai │ /scenarios │
-├─────────────────────────────────────────────────────────────┤
-│  AI ENGINE        │  SCENARIO ENGINE   │  SELF-IMPROVER     │
-│  (Gemini API +    │  (God Mode:        │  (Cross-run        │
-│   Rule Fallback)  │   5 disruptions)   │   comparison)      │
-├─────────────────────────────────────────────────────────────┤
-│  PostgreSQL 15    │  Redis 7           │  Docker Compose    │
-│  (8 tables)       │  (Real-time cache) │  (Infrastructure)  │
-└─────────────────────────────────────────────────────────────┘
-                         ▲
-          ┌──────────────┴──────────────┐
-          │   SIMULATION LAYER          │
-          │   (Teammate's module)       │
-          │   Sends POST /api/telemetry │
-          └─────────────────────────────┘
+```mermaid
+graph TD
+  Sim[Target Simulation\n(Webots/Gazebo/Unity)] -->|POST /telemetry| API[Node.js API\n(Express + Gemini)]
+  API -->|Write| DB[(PostgreSQL)]
+  API -->|Cache| Redis[(Redis)]
+  
+  subgraph "AI & Logic"
+    API -->|Prompt| Gemini[Gemini 2.5 Pro]
+    Gemini -->|Strategy| API
+  end
+
+  subgraph "Frontend"
+    Dashboard[Live Dashboard] -->|Poll (5s)| API
+    Dashboard -->|Visualization| User
+  end
 ```
 
 ---
 
 ## 🛠 Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Backend** | Node.js + Express.js |
-| **Database** | PostgreSQL 15 (8 tables, indexed) |
-| **Cache** | Redis 7 (real-time telemetry) |
-| **AI Engine** | Google Gemini API + rule-based fallback |
-| **Frontend** | Vanilla JS + Canvas charts (zero dependencies) |
-| **Infrastructure** | Docker Compose + Vultr VPS |
-| **Architecture** | Modular MVC (routes → services → DB) |
+| Component | Technology | Description |
+|-----------|-----------|-------------|
+| **Core** | Node.js + Express.js | High-performance event-driven backend |
+| **Database** | PostgreSQL 15 | relational data for runs, robots, tasks, metrics |
+| **Caching** | Redis 7 | Sub-millisecond telemetry ingestion |
+| **AI Model** | **Gemini 2.5 Pro** | Decision making, strategy generation, log analysis |
+| **Frontend** | Vanilla JS + Canvas | Lightweight, dependency-free dashboard |
+| **Infrastructure** | Vultr Cloud | Ubuntu 22.04 LTS VPS hosting |
+| **Simulation** | Webots / PythonBridge | External physics engine integration |
 
 ---
 
-## 🚀 Key Features
+## 🔌 Simulation Integration (Python)
 
-### 1. Real-Time Fleet Monitoring
-- 6-robot fleet with live position, battery, and task tracking
-- Redis-powered sub-second state updates
-- Auto-refreshing dashboard
+Connect ANY robot simulation to ARCC using our lightweight Python bridge.
 
-### 2. AI Decision Engine
-- **Task Optimization**: Assigns tasks to robots based on distance, battery, and capacity
-- **Run Analysis**: Post-run performance review with improvement suggestions
-- **Failure Response**: Dynamic strategy when scenarios are triggered
-- **Self-Improving Loop**: Each run generates better strategy than the last
+```python
+import requests
 
-### 3. God Mode (Scenario Engine)
-| Scenario | Effect |
-|----------|--------|
-| Demand Spike | 3x task volume surge |
-| Robot Failure | Random unit goes offline |
-| Battery Shortage | All batteries drop 40% |
-| Emergency Order | Priority-10 task injected |
-| Blocked Path | Grid zones become impassable |
+# 1. Connect
+API_URL = "http://149.28.125.185:3000/api"
 
-### 4. Self-Improvement Loop
+# 2. Send Telemetry in your update loop
+requests.post(f"{API_URL}/telemetry/{run_id}", json={
+    "robot_id": "ROBOT_01",
+    "x": 45.2, "y": 12.8,
+    "battery": 88.5,
+    "status": "working"
+})
 ```
-Run N → Collect Metrics → AI Analysis → Generate Strategy N+1 → Run N+1 → Compare → Repeat
-```
-Each run stores its strategy and performance. The system compares across runs and generates an improved strategy, showing measurable gains.
+*See `UPDATED_CONTROLLER.py` for a full Webots example.*
 
 ---
 
-## 📡 API Reference
+## 🚀 Quick Start (Local Dev)
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/health` | System health check |
-| GET | `/api/robots` | List fleet |
-| GET | `/api/simulations` | List runs |
-| POST | `/api/simulations/start` | Start a simulation run |
-| POST | `/api/simulations/:id/stop` | End a run |
-| POST | `/api/telemetry/:run_id` | Ingest robot data |
-| GET | `/api/tasks` | List tasks |
-| POST | `/api/tasks` | Create task |
-| GET | `/api/metrics/dashboard` | Dashboard aggregates |
-| GET | `/api/metrics/compare` | Cross-run comparison |
-| POST | `/api/ai/optimize/:run_id` | AI task optimization |
-| POST | `/api/ai/analyze/:run_id` | Post-run AI analysis |
-| POST | `/api/ai/improve/:scenario_id` | Self-improvement loop |
-| GET | `/api/ai/decisions` | AI decision log |
-| GET | `/api/scenarios` | List scenarios |
-| POST | `/api/scenarios/trigger` | Trigger disruption |
+### Prerequisites
+- Node.js 18+
+- Docker & Docker Compose
 
----
-
-## 🏃 Quick Start
-
+### 1. Clone & Setup
 ```bash
-# 1. Clone
 git clone https://github.com/let-the-dreamers-rise/autonomous-robotics-command-center.git
 cd autonomous-robotics-command-center
-
-# 2. Start Database
-docker compose up -d
-
-# 3. Initialize Schema
-docker cp init_db.sql robotics-backend-db-1:/init_db.sql
-docker exec -i robotics-backend-db-1 psql -U admin -d robotics_v1 -f /init_db.sql
-
-# 4. Install Dependencies
 npm install
-
-# 5. Start Server
-node server.js
-
-# 6. Open Dashboard
-# http://localhost:3000
 ```
 
+### 2. Start Infrastructure
+```bash
+docker compose up -d
+```
+
+### 3. Initialize Database
+```bash
+# Copy init script to container and run it
+docker cp init_db.sql robotics-backend-db-1:/init_db.sql
+docker exec -i robotics-backend-db-1 psql -U admin -d robotics_v1 -f /init_db.sql
+```
+
+### 4. Run the Server
+```bash
+# Create .env file with your GEMINI_API_KEY first!
+node server.js
+```
+
+Visit **`http://localhost:3000`** to see your local instance!
+
 ---
 
-## 🎬 Demo Flow (60 seconds)
+## 📡 API Endpoints
 
-1. Open dashboard → Show fleet status (6 robots, all idle)
-2. Click "Start Run" → Simulation begins, stats update
-3. Click "AI Optimize" → Watch AI assign tasks to robots
-4. Switch to God Mode → Trigger "Robot Failure" → AI responds dynamically
-5. Stop run → Click "Analyze Run" → AI generates improvement report
-6. Click "Generate Improvement Strategy" → Show self-learning across runs
-
----
-
-## 🔮 Startup Potential
-
-- **Market**: $50B+ warehouse automation market (growing 14% YoY)
-- **Customers**: Amazon, DHL, Walmart, any company deploying autonomous fleets
-- **Moat**: Self-improving AI loop + scenario testing = reduced deployment risk by 80%
-- **Revenue**: SaaS subscription ($500-5,000/mo per warehouse)
-- **Next Steps**: Real robot SDK integration, 3D visualization, multi-warehouse support
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| `GET` | `/api/metrics/dashboard` | Main dashboard aggregate stats |
+| `GET` | `/api/warehouses` | List warehouses & status |
+| `POST` | `/api/simulations/start` | Begin a new simulation run |
+| `POST` | `/api/telemetry/:run_id` | Ingest high-freq robot data |
+| `POST` | `/api/ai/optimize/:run_id` | Trigger Gemini optimization |
+| `POST` | `/api/scenarios/trigger` | Inject "God Mode" disruption |
 
 ---
 
-## 👥 Team
+## 👥 Team: Let The Dreamers Rise
 
-**Let The Dreamers Rise**
-
-Built for Version 7 Hackathon 🚀
+Built for the **Mikhail Hackathon 2026**.
+*Empowering the next generation of autonomous logistics.*
