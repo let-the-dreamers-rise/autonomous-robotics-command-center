@@ -37,7 +37,7 @@ Deploying autonomous robots is **expensive and risky**. A single misconfiguratio
 
 ```mermaid
 graph TD
-  Sim[Target Simulation\n(Webots/Gazebo/Unity)] -->|POST /telemetry| API[Node.js API\n(Express + Gemini)]
+  Sim["Target Simulation<br>(Webots/Gazebo/Unity)"] -->|POST /telemetry| API["Node.js API<br>(Express + Gemini)"]
   API -->|Write| DB[(PostgreSQL)]
   API -->|Cache| Redis[(Redis)]
   
@@ -47,7 +47,7 @@ graph TD
   end
 
   subgraph "Frontend"
-    Dashboard[Live Dashboard] -->|Poll (5s)| API
+    Dashboard[Live Dashboard] -->|Poll 5s| API
     Dashboard -->|Visualization| User
   end
 ```
