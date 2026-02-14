@@ -138,7 +138,4 @@ Visit **`http://localhost:3000`** to see your local instance!
 
 ---
 
-## 👥 Team: Let The Dreamers Rise
 
-Built for the **Mikhail Hackathon 2026**.
-*Empowering the next generation of autonomous logistics.*
