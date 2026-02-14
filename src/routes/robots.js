@@ -2,15 +2,22 @@ const express = require('express');
 const router = express.Router();
 const { pool } = require('../config/db');
 
-// GET /api/robots — List all robots
+// GET /api/robots — List all robots (optional ?warehouse_id= filter)
 router.get('/', async (req, res) => {
+    const { warehouse_id } = req.query;
     try {
-        const result = await pool.query(
-            `SELECT r.*, t.type as current_task_type, t.priority as current_task_priority
+        let query = `SELECT r.*, t.type as current_task_type, t.priority as current_task_priority,
+              w.name as warehouse_name
        FROM robots r
        LEFT JOIN tasks t ON r.current_task_id = t.id
-       ORDER BY r.name ASC`
-        );
+       LEFT JOIN warehouses w ON r.warehouse_id = w.id`;
+        const params = [];
+        if (warehouse_id) {
+            query += ' WHERE r.warehouse_id = $1';
+            params.push(warehouse_id);
+        }
+        query += ' ORDER BY r.name ASC';
+        const result = await pool.query(query, params);
         res.json(result.rows);
     } catch (err) { res.status(500).json({ error: err.message }); }
 });

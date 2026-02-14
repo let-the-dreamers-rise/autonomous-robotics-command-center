@@ -2,24 +2,31 @@ const express = require('express');
 const router = express.Router();
 const { pool } = require('../config/db');
 
-// GET /api/simulations — List recent runs
+// GET /api/simulations — List recent runs (optional ?warehouse_id= filter)
 router.get('/', async (req, res) => {
+    const { warehouse_id } = req.query;
     try {
-        const result = await pool.query(
-            `SELECT sr.*, s.name as scenario_name, s.difficulty,
-              m.efficiency_score, m.completed_tasks, m.total_tasks
+        let query = `SELECT sr.*, s.name as scenario_name, s.difficulty,
+              m.efficiency_score, m.completed_tasks, m.total_tasks,
+              w.name as warehouse_name
        FROM simulation_runs sr
        LEFT JOIN scenarios s ON sr.scenario_id = s.id
        LEFT JOIN metrics m ON m.run_id = sr.id
-       ORDER BY sr.start_time DESC LIMIT 20`
-        );
+       LEFT JOIN warehouses w ON sr.warehouse_id = w.id`;
+        const params = [];
+        if (warehouse_id) {
+            query += ' WHERE sr.warehouse_id = $1';
+            params.push(warehouse_id);
+        }
+        query += ' ORDER BY sr.start_time DESC LIMIT 20';
+        const result = await pool.query(query, params);
         res.json(result.rows);
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // POST /api/simulations/start — Start a new run
 router.post('/start', async (req, res) => {
-    const { scenario_id, strategy } = req.body;
+    const { scenario_id, strategy, warehouse_id } = req.body;
     try {
         // Get run count for this scenario
         const countResult = await pool.query(
@@ -28,13 +35,17 @@ router.post('/start', async (req, res) => {
         const runNumber = parseInt(countResult.rows[0].cnt) + 1;
 
         const result = await pool.query(
-            `INSERT INTO simulation_runs (scenario_id, status, strategy_json, run_number)
-       VALUES ($1, 'running', $2, $3) RETURNING *`,
-            [scenario_id, strategy || '{}', runNumber]
+            `INSERT INTO simulation_runs (scenario_id, warehouse_id, status, strategy_json, run_number)
+       VALUES ($1, $2, 'running', $3, $4) RETURNING *`,
+            [scenario_id, warehouse_id || null, strategy || '{}', runNumber]
         );
 
-        // Reset all robots to idle
-        await pool.query("UPDATE robots SET status = 'idle', battery_level = 100.0");
+        // Reset robots to idle (scoped to warehouse if provided)
+        if (warehouse_id) {
+            await pool.query("UPDATE robots SET status = 'idle', battery_level = 100.0 WHERE warehouse_id = $1", [warehouse_id]);
+        } else {
+            await pool.query("UPDATE robots SET status = 'idle', battery_level = 100.0");
+        }
 
         res.json({ run: result.rows[0], message: `Run #${runNumber} started` });
     } catch (err) { res.status(500).json({ error: err.message }); }

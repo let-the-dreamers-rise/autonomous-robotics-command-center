@@ -28,7 +28,7 @@ function switchPage(page) {
     const titles = {
         dashboard: 'Command Center', fleet: 'Fleet Status', metrics: 'Performance Metrics',
         ai: 'AI Decision Log', scenarios: 'God Mode', compare: 'Self-Improvement Loop',
-        replay: 'Run Replay', alerts: 'System Alerts'
+        replay: 'Run Replay', alerts: 'System Alerts', warehouses: 'Warehouse Management'
     };
     document.getElementById('page-title').textContent = titles[page] || page;
     loadPageData(page);
@@ -63,6 +63,7 @@ async function loadPageData(page) {
         case 'compare': await loadComparison(); break;
         case 'replay': await loadReplayOptions(); break;
         case 'alerts': await loadAlerts(); break;
+        case 'warehouses': await loadWarehouses(); break;
     }
 }
 
@@ -248,6 +249,26 @@ async function loadAlerts() {
     }
 }
 
+async function loadWarehouses() {
+    const warehouses = await api('/warehouses');
+    const tbody = document.getElementById('warehouse-table-body');
+    if (warehouses?.length) {
+        tbody.innerHTML = warehouses.map(w => {
+            const statusColor = w.status === 'active' ? 'var(--accent-green)' : 'var(--accent-red)';
+            return `<tr>
+        <td><strong>${w.name}</strong></td>
+        <td>${w.location || '—'}</td>
+        <td>${w.grid_width}×${w.grid_height}</td>
+        <td>${w.robot_count || 0}</td>
+        <td>${w.run_count || 0}</td>
+        <td><span class="badge" style="background:${statusColor}">${w.status}</span></td>
+      </tr>`;
+        }).join('');
+    } else {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted)">No warehouses found.</td></tr>';
+    }
+}
+
 // ============================================
 // ACTIONS
 // ============================================
@@ -325,6 +346,18 @@ document.getElementById('btn-load-replay').addEventListener('click', async () =>
 document.getElementById('btn-check-health').addEventListener('click', async () => {
     const result = await api('/ai/alerts/check', { method: 'POST' });
     if (result) { loadAlerts(); }
+});
+
+document.getElementById('btn-add-warehouse').addEventListener('click', async () => {
+    const name = document.getElementById('wh-name').value.trim();
+    const location = document.getElementById('wh-location').value.trim();
+    if (!name) return alert('Please enter a warehouse name');
+    const result = await api('/warehouses', { method: 'POST', body: { name, location } });
+    if (result?.id) {
+        document.getElementById('wh-name').value = '';
+        document.getElementById('wh-location').value = '';
+        loadWarehouses();
+    }
 });
 
 async function triggerScenario(type) {

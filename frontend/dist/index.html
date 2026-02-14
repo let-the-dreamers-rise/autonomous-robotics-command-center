@@ -40,6 +40,8 @@
             <span class="nav-icon">▶</span> Replay</a></li>
         <li><a href="#" class="nav-link" data-page="alerts">
             <span class="nav-icon">🔔</span> Alerts</a></li>
+        <li><a href="#" class="nav-link" data-page="warehouses">
+            <span class="nav-icon">🏭</span> Warehouses</a></li>
       </ul>
       <div class="sidebar-footer">
         <button class="demo-btn" id="btn-demo-mode">🎬 Generate Demo Data</button>
@@ -228,6 +230,35 @@
               <h3>🔔 System Alerts</h3>
               <button class="action-btn" id="btn-check-health">Run Health Check</button>
               <div id="alerts-list"></div>
+            </div>
+          </section>
+
+          <!-- WAREHOUSES -->
+          <section id="page-warehouses" class="page">
+            <div class="card">
+              <h3>🏭 Multi-Warehouse Management</h3>
+              <p class="card-desc">Manage warehouse locations and monitor robot distribution across sites.</p>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Grid</th>
+                    <th>Robots</th>
+                    <th>Runs</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="warehouse-table-body"></tbody>
+              </table>
+            </div>
+            <div class="card">
+              <h3>Add Warehouse</h3>
+              <div class="action-grid">
+                <input type="text" id="wh-name" placeholder="Warehouse name" class="select-input" />
+                <input type="text" id="wh-location" placeholder="Location" class="select-input" />
+                <button class="action-btn" id="btn-add-warehouse">+ Add Warehouse</button>
+              </div>
             </div>
           </section>
         </div>

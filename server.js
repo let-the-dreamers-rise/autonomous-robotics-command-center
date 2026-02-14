@@ -12,6 +12,8 @@ const taskRoutes = require('./src/routes/tasks');
 const metricRoutes = require('./src/routes/metrics');
 const aiRoutes = require('./src/routes/ai');
 const scenarioRoutes = require('./src/routes/scenarios');
+const warehouseRoutes = require('./src/routes/warehouses');
+const userRoutes = require('./src/routes/users');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -42,6 +44,8 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/metrics', metricRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/scenarios', scenarioRoutes);
+app.use('/api/warehouses', warehouseRoutes);
+app.use('/api/users', userRoutes);
 
 // Catch-all: serve frontend for non-API routes
 app.get('*', (req, res) => {
