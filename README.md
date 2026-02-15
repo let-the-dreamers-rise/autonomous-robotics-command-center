@@ -64,7 +64,7 @@ graph TD
 | **AI Model** | **Gemini 2.5 Pro** | Decision making, strategy generation, log analysis |
 | **Frontend** | Vanilla JS + Canvas | Lightweight, dependency-free dashboard |
 | **Infrastructure** | Vultr Cloud | Ubuntu 22.04 LTS VPS hosting |
-| **Simulation** | Webots / PythonBridge | External physics engine integration |
+| **Simulation** | External simulation-ready API architecture (engine-agnostic) |
 
 ---
 
